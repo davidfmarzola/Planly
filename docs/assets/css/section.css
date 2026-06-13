@@ -1,0 +1,121 @@
+/* ========================
+   Seção Hero (Saiba mais)
+======================== */
+
+.hero {
+  position: relative;
+  background-color: #6c63ff;
+  padding: 60px;
+  overflow: hidden;
+}
+
+.hero .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 2;
+  position: relative;
+}
+
+  @media (max-width:720px){
+      .hero .container{
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+/* ========================
+   Conteúdo de Texto
+======================== */
+
+.text-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  z-index: 2;
+}
+
+.text-content h1 {
+  font-size: 64px;
+  color: white;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.text-content p {
+  font-size: 24px;
+  color: #1E1E1E;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+/* ========================
+   Botão de Ação
+======================== */
+
+.button {
+  width: 258px;
+  height: 70px;
+  background-color: white;
+  color: #1e1e1e;
+  font-size: 30px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.button:hover {
+  width: 265px;
+  height: 78px;
+  background-color: #1e1e1e;
+  color: white;
+}
+
+  @media (max-width:720px) {
+  .button {
+    width: 200px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto;
+  }
+}
+
+/* ========================
+   Imagem fora do container
+======================== */
+
+.image-outside {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.image-outside img {
+  height: 510px;
+  width: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+  @media (max-width:720px){
+    .image-outside{
+      display: none;
+    }
+  }
+  @media (max-width: 422px) {
+  .text-content h1 {
+    font-size: 3px;
+    text-align: center;
+  }
+  .text-content p{
+    font-size: 20px;
+    text-align: center;
+  }
+}

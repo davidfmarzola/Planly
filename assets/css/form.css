@@ -1,0 +1,413 @@
+/* ========================
+   Reset / Base
+======================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================
+   Header
+======================== */
+.header {
+  background-color: #1e1e1e;
+  padding: 16px 24px;
+}
+
+.header .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.branding {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.branding .logo {
+  width: 40px;
+  height: 40px;
+}
+
+.branding h1 {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.branding .p2 {
+  color: #8c52ff;
+}
+
+/* Switch tema */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #8c52ff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* ========================
+   Main / Formulário (Responsivo)
+======================== */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  background-color: white;
+  flex: 1;
+}
+
+form.formulario {
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  width: 100%;
+  text-align: left;
+}
+
+.form-group h1 {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 14px;
+}
+
+/* Radio buttons */
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: #e0e0e0;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.form-group input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #8c52ff;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Input file */
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #8c52ff;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.form-group input[type="file"]::file-selector-button {
+  background-color: #8c52ff;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: 0.3s;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+  background-color: #6b3fcc;
+}
+
+/* Input texto cargo */
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #8c52ff;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: white;
+  outline: none;
+  transition: 0.2s;
+}
+
+.form-group input[type="text"]:focus {
+  border-color: #6b3fcc;
+  box-shadow: 0 0 0 3px rgba(140,82,255,0.2);
+}
+
+/* Botões */
+.botoes {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.formulario .button {
+  background-color: #8c52ff;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 10px 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  min-width: 140px;
+}
+
+.formulario .button:hover {
+  background-color: white;
+  color: #1e1e1e;
+  border: 2px solid #8c52ff;
+  padding: 8px 30px;
+}
+
+/* Botão Mostrar Conteúdo */
+#mostrarConteudo {
+  background-color: transparent;
+  color: #8c52ff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border: 2px solid #8c52ff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+}
+#mostrarConteudo:hover {
+  background-color: #8c52ff;
+  color: white;
+}
+
+/* Container de disciplinas extraídas */
+#conteudo-disciplinas {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Lista de disciplinas */
+#lista-disciplinas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.disciplina-tag {
+  background-color: #8c52ff;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Textarea dificuldade */
+.input-dificuldade {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 2px solid #8c52ff;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  background-color: white;
+  outline: none;
+  resize: vertical;
+  transition: 0.2s;
+}
+.input-dificuldade:focus {
+  border-color: #6b3fcc;
+  box-shadow: 0 0 0 3px rgba(140,82,255,0.2);
+}
+
+/* ========================
+   Footer (Responsivo)
+======================== */
+footer {
+  background-color: #1e1e1e;
+  padding: 32px 24px;
+  border-top: 1px solid #333;
+}
+
+.footer-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.apoie, .contatos {
+  flex: 1;
+  min-width: 220px;
+}
+
+.footer-grid h4 {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.footer-list {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-list img {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+}
+
+.footer-list a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.footer-list a:hover {
+  color: #8c52ff;
+  text-decoration: underline;
+}
+
+/* ========================
+   Responsividade
+======================== */
+@media (max-width: 768px) {
+  .header .container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  form.formulario {
+    padding: 24px 20px;
+    gap: 20px;
+  }
+
+  .form-group h1 {
+    font-size: 16px;
+  }
+
+  .botoes {
+    gap: 16px;
+  }
+
+  .formulario .button {
+    font-size: 16px;
+    padding: 8px 24px;
+    min-width: 120px;
+  }
+
+  .footer-grid {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .footer-list li {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 24px 16px;
+  }
+
+  form.formulario {
+    padding: 20px 16px;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="file"] {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .formulario .button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .disciplina-tag {
+    font-size: 13px;
+    padding: 5px 12px;
+  }
+}

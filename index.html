@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planly</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" type="image/png" href="assets/icons/icon.svg"/>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="branding">
+        <img src="assets/icons/logo.svg" alt="logo do planly" class="logo">
+        <h1>PLAN<span class="p2">LY</span></h1>
+      </div>
+
+      <!-- <label class="switch" aria-label="Alterar tema escuro/claro" title="Alterar tema">
+        <input type="checkbox" id="themeToggle">
+        <span class="slider"></span>
+      </label> -->
+    </div>
+  </header>
+
+  <!-- <section class="hero">
+    <div class="container">
+      <div class="text-content">
+        <h1>Sua rotina,<br>do seu jeito.</h1>
+        <p>Crie a rotina de estudos perfeita <br> para alcançar o seu melhor desempenho.</p>
+        <button class="button" id="saibaMais">Saiba mais</button>
+      </div>
+    </div>
+
+    <div class="image-outside">
+      <img src="assets/img/background-notebook.jpg" alt="Notebook ao fundo">
+    </div>
+  </section> -->
+
+  <main id="formulario">
+    <form class="formulario">
+      <div class="form-group">
+        <h1>Selecione o edital do concurso (PDF)</h1>
+        <input type="file" id="edital" accept="application/pdf">
+      </div>
+
+      <div class="form-group">
+        <h1>Escolha o cargo</h1>
+        <input type="text" id="cargo" list="opcoes" placeholder="Digite um cargo do edital">
+        <datalist id="opcoes"></datalist>
+      </div>
+
+      <button type="button" class="button" id="mostrarConteudo">MOSTRAR CONTEÚDO</button>
+
+      <!-- Container preenchido dinamicamente após extração -->
+      <div id="conteudo-disciplinas" style="display: none;">
+        <div class="form-group">
+          <h1>Conteúdo do edital</h1>
+          <div id="lista-disciplinas"></div>
+        </div>
+
+        <div class="form-group">
+          <h1>Horas diárias de estudo</h1>
+          <label><input type="radio" name="horas_estudo" value="1"> 1 hora</label><br>
+          <label><input type="radio" name="horas_estudo" value="2"> 2 horas</label><br>
+          <label><input type="radio" name="horas_estudo" value="3"> 3 horas</label><br>
+          <label><input type="radio" name="horas_estudo" value="4"> 4 horas</label><br>
+          <label><input type="radio" name="horas_estudo" value="5"> 5 horas</label>
+        </div>
+
+        <div class="form-group">
+          <h1>Matérias com mais dificuldade ou facilidade</h1>
+          <textarea id="dificuldade" class="input-dificuldade" placeholder="Ex: tenho dificuldade em Matemática e facilidade em Português. Também quero focar mais em Direito Constitucional porque tem maior peso."></textarea>
+        </div>
+
+        <div class="botoes">
+          <button type="submit" class="button" id="gerar">GERAR</button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <!-- <section class="exemplo hero">
+    <div class="container">
+      <div class="text-content">
+        <h1>Exemplo<br>simples.</h1>
+        <div class="exemplo-form">
+          <p>Possuo o final de semana todo livre.</p>
+          <button class="button" id="gerarExemplo">GERAR</button>
+        </div>
+      </div>
+    </div>
+    <div class="image-outside">
+      <img src="assets/img/background-tasks.jpg" alt="Checklist">
+    </div>
+  </section> -->
+
+  <footer>
+    <div class="footer-grid">
+      <div class="apoie">
+        <h4>Apoie meu projeto</h4>
+        <ul class="footer-list">
+          <li>
+            <img src="assets/icons/github.svg" alt="GitHub">
+            <a href="https://github.com/davidfmarzola" target="_blank">github.com/davidfmarzola</a>
+          </li>
+          <li>
+            <img src="assets/icons/linkedin.svg" alt="LinkedIn">
+            <a href="https://www.linkedin.com/in/davidfmarzola/" target="_blank">David F. Marzola</a>
+          </li>
+        </ul>
+      </div>
+      <div class="contatos">
+        <h4>Entre em contato</h4>
+        <ul class="footer-list">
+          <li>
+            <img src="assets/icons/gmail.svg" alt="Gmail">
+            <a href="mailto:davidmarzola22@gmail.com">davidmarzola22@gmail.com</a>
+          </li>
+          <li>
+            <img src="assets/icons/phone.svg" alt="Telefone">
+            <a href="tel:+5531995201158">+55 (31) 99520-1158</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+
+<div id="loading" style="display: none;">
+  <div class="loader"></div>
+  <p style="color: #1e1e1e;">Gerando plano de estudos...</p>
+</div>
+<script src="assets/js/button.js"></script>
+<script src="assets/js/actions.js"></script>
+</body>
+</html>
