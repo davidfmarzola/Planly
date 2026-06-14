@@ -7,6 +7,7 @@ const mostrarConteudoBtn = document.getElementById('mostrarConteudo');
 const conteudoDisciplinas = document.getElementById('conteudo-disciplinas');
 const listaDisciplinas = document.getElementById('lista-disciplinas');
 const dificuldadeInput = document.getElementById('dificuldade');
+const BASE_URL = 'https://planly-qmpv.onrender.com';
 
 function getRotinaJSON() {
   const radio = document.querySelector('input[name="horas_estudo"]:checked');
@@ -139,7 +140,7 @@ editalInput.addEventListener("change", async function () {
   dados.append("edital", arquivo);
 
   try {
-    const resposta = await fetch("http://127.0.0.1:5000/extrair_cargos", {
+    const resposta = await fetch(`${BASE_URL}/extrair_cargos`, {
       method: "POST",
       body: dados
     });
@@ -184,7 +185,7 @@ mostrarConteudoBtn.addEventListener('click', async function (e) {
     dados.append('edital', arquivo);
     dados.append('cargo', inputCargo.value.trim());
 
-    const resposta = await fetch('http://127.0.0.1:5000/extrair_disciplinas', {
+    const resposta = await fetch(`${BASE_URL}/extrair_disciplinas`, {
       method: 'POST',
       body: dados,
     });
@@ -220,7 +221,7 @@ mostrarConteudoBtn.addEventListener('click', async function (e) {
 // --- GERAR ---
 gerarBtn.addEventListener('click', (e) => {
   e.preventDefault();
-  enviarDados('http://127.0.0.1:5000/gerar');
+  enviarDados(`${BASE_URL}/gerar`);
 });
 
 // Fluxo interativo Planning/ReAct
@@ -228,7 +229,7 @@ informarBtn.addEventListener('click', async (e) => {
   e.preventDefault();
   mostrarLoader(true);
   try {
-    const iniciar = await fetch('http://127.0.0.1:5000/informar', {
+    const iniciar = await fetch(`${BASE_URL}/informar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ rotina: getRotinaJSON(), cargo: inputCargo.value })
@@ -246,7 +247,7 @@ informarBtn.addEventListener('click', async (e) => {
         alert('Fluxo cancelado.');
         return;
       }
-      const r = await fetch('http://127.0.0.1:5000/informar', {
+      const r = await fetch(`${BASE_URL}/informar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId, answer: respostaUsuario })
