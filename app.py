@@ -55,7 +55,29 @@ cliente_ia = OpenAI(
 )
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": [
+    "https://davidfmarzola.github.io",
+    "https://david.marzola.github.io",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+]}}, supports_credentials=True)
+
+@app.after_request
+def adicionar_cabecalhos_cors(resposta):
+    origem = request.headers.get("Origin", "")
+    origens_permitidas = [
+        "https://davidfmarzola.github.io",
+        "https://david.marzola.github.io",
+        "http://localhost:5000",
+        "http://127.0.0.1:5000",
+    ]
+    if origem in origens_permitidas:
+        resposta.headers["Access-Control-Allow-Origin"] = origem
+    else:
+        resposta.headers["Access-Control-Allow-Origin"] = "*"
+    resposta.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    resposta.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return resposta
 
 # Armazena sessões temporárias do fluxo interativo (/informar) em memória.
 # Chave: session_id (UUID) → Valor: dicionário com estado da conversa.

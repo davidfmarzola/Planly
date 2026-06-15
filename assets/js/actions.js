@@ -1,12 +1,3 @@
-const gerarBtn = document.getElementById('gerar');
-const informarBtn = document.getElementById('informar');
-const inputCargo = document.getElementById('cargo');
-const loader = document.getElementById('loading');
-const editalInput = document.getElementById('edital');
-const mostrarConteudoBtn = document.getElementById('mostrarConteudo');
-const conteudoDisciplinas = document.getElementById('conteudo-disciplinas');
-const listaDisciplinas = document.getElementById('lista-disciplinas');
-const dificuldadeInput = document.getElementById('dificuldade');
 const BASE_URL = 'https://planly-qmpv.onrender.com';
 
 function getRotinaJSON() {
@@ -34,7 +25,7 @@ function getRotinaJSON() {
   });
 }
 
-async function enviarDados(url) {
+async function enviarDados(url, inputCargo, editalInput, dificuldadeInput) {
   const arquivo = editalInput.files[0];
 
   if (!inputCargo.value.trim()) {
@@ -60,7 +51,8 @@ async function enviarDados(url) {
     };
   }
 
-  mostrarLoader(true, 'Montando plano de estudos...');
+  const loader = document.getElementById('loading');
+  mostrarLoader(true, 'Montando plano de estudos...', loader);
 
   try {
     const resposta = await fetch(url, {
@@ -99,11 +91,12 @@ async function enviarDados(url) {
   } catch (err) {
     alert('Erro ao conectar com o servidor: ' + err.message);
   } finally {
-    mostrarLoader(false);
+    mostrarLoader(false, '', loader);
   }
 }
 
-function mostrarLoader(exibir, mensagem) {
+function mostrarLoader(exibir, mensagem, loader) {
+  if (!loader) return;
   loader.style.display = exibir ? 'flex' : 'none';
   if (exibir && mensagem) {
     document.getElementById('loading-text').textContent = mensagem;
@@ -135,139 +128,154 @@ function exibirModal(conteudo) {
   });
 }
 
-editalInput.addEventListener("change", async function () {
-  const arquivo = this.files[0];
-  if (!arquivo) return;
+document.addEventListener('DOMContentLoaded', function () {
+  const editalInput = document.getElementById('edital');
+  const inputCargo = document.getElementById('cargo');
+  const mostrarConteudoBtn = document.getElementById('mostrarConteudo');
+  const conteudoDisciplinas = document.getElementById('conteudo-disciplinas');
+  const listaDisciplinas = document.getElementById('lista-disciplinas');
+  const dificuldadeInput = document.getElementById('dificuldade');
+  const gerarBtn = document.getElementById('gerar');
+  const informarBtn = document.getElementById('informar');
 
-  const dados = new FormData();
-  dados.append("edital", arquivo);
+  if (!editalInput || !inputCargo) return;
 
-  try {
-    const resposta = await fetch(`${BASE_URL}/extrair_cargos`, {
-      method: "POST",
-      body: dados
-    });
+  editalInput.addEventListener('change', async function () {
+    const arquivo = this.files[0];
+    if (!arquivo) return;
 
-    if (!resposta.ok) {
-      throw new Error("Erro ao processar edital");
-    }
-
-    const resultado = await resposta.json();
-    const lista = document.getElementById("opcoes");
-    lista.innerHTML = "";
-
-    resultado.cargos.forEach(cargo => {
-      const option = document.createElement("option");
-      option.value = cargo;
-      lista.appendChild(option);
-    });
-  } catch (e) {
-    console.error("Erro:", e);
-    alert("Erro ao extrair cargos do edital.");
-  }
-});
-
-// --- Mostrar Conteúdo ---
-mostrarConteudoBtn.addEventListener('click', async function (e) {
-  e.preventDefault();
-
-  const arquivo = editalInput.files[0];
-  if (!arquivo) {
-    alert('Selecione o edital (PDF) primeiro.');
-    return;
-  }
-  if (!inputCargo.value.trim()) {
-    alert('Digite o nome do cargo.');
-    return;
-  }
-
-  mostrarLoader(true, 'Analisando edital...');
-
-  try {
     const dados = new FormData();
     dados.append('edital', arquivo);
-    dados.append('cargo', inputCargo.value.trim());
 
-    const resposta = await fetch(`${BASE_URL}/extrair_disciplinas`, {
-      method: 'POST',
-      body: dados,
-    });
-
-    if (!resposta.ok) {
-      const erro = await resposta.json();
-      alert('Erro: ' + (erro.erro || 'Erro ao extrair disciplinas.'));
-      return;
-    }
-
-    const json = await resposta.json();
-    const disciplinas = json.disciplinas || [];
-
-    // Renderiza cada disciplina como uma tag
-    listaDisciplinas.innerHTML = disciplinas.map(nome =>
-      `<span class="disciplina-tag">${nome}</span>`
-    ).join('');
-
-    // Mostra o container e esconde o botão
-    conteudoDisciplinas.style.display = 'flex';
-    mostrarConteudoBtn.style.display = 'none';
-
-    // Rola para o container
-    conteudoDisciplinas.scrollIntoView({ behavior: 'smooth' });
-
-  } catch (err) {
-    alert('Erro ao conectar com o servidor: ' + err.message);
-  } finally {
-    mostrarLoader(false);
-  }
-});
-
-// --- GERAR ---
-gerarBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  enviarDados(`${BASE_URL}/gerar`);
-});
-
-// Fluxo interativo Planning/ReAct
-informarBtn.addEventListener('click', async (e) => {
-  e.preventDefault();
-  mostrarLoader(true);
-  try {
-    const iniciar = await fetch(`${BASE_URL}/informar`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rotina: getRotinaJSON(), cargo: inputCargo.value })
-    });
-    const initJson = await iniciar.json();
-    if (initJson.erro) throw new Error(initJson.erro);
-
-    let sessionId = initJson.session_id;
-    let pergunta = initJson.next_question;
-    let partial = initJson.partial || {};
-
-    while (pergunta) {
-      const respostaUsuario = prompt(pergunta);
-      if (respostaUsuario === null) {
-        alert('Fluxo cancelado.');
-        return;
-      }
-      const r = await fetch(`${BASE_URL}/informar`, {
+    try {
+      const resposta = await fetch(`${BASE_URL}/extrair_cargos`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: sessionId, answer: respostaUsuario })
+        body: dados
       });
-      const j = await r.json();
-      if (j.resultado) {
-        exibirModal(j.resultado);
+
+      if (!resposta.ok) {
+        throw new Error('Erro ao processar edital');
+      }
+
+      const resultado = await resposta.json();
+      const lista = document.getElementById('opcoes');
+      lista.innerHTML = '';
+
+      (resultado.cargos || []).forEach(cargo => {
+        const option = document.createElement('option');
+        option.value = cargo;
+        lista.appendChild(option);
+      });
+    } catch (e) {
+      console.error('Erro:', e);
+      alert('Erro ao extrair cargos do edital.');
+    }
+  });
+
+  if (mostrarConteudoBtn) {
+    mostrarConteudoBtn.addEventListener('click', async function (e) {
+      e.preventDefault();
+
+      const arquivo = editalInput.files[0];
+      if (!arquivo) {
+        alert('Selecione o edital (PDF) primeiro.');
         return;
       }
-      if (j.erro) throw new Error(j.erro);
-      sessionId = j.session_id || sessionId;
-      pergunta = j.next_question;
-      partial = j.partial || partial;
-    }
-  } catch (err) {
-    alert('Erro no fluxo interativo: ' + err.message);
-  } finally {
-    mostrarLoader(false);
+      if (!inputCargo.value.trim()) {
+        alert('Digite o nome do cargo.');
+        return;
+      }
+
+      const loader = document.getElementById('loading');
+      mostrarLoader(true, 'Analisando edital...', loader);
+
+      try {
+        const dados = new FormData();
+        dados.append('edital', arquivo);
+        dados.append('cargo', inputCargo.value.trim());
+
+        const resposta = await fetch(`${BASE_URL}/extrair_disciplinas`, {
+          method: 'POST',
+          body: dados,
+        });
+
+        if (!resposta.ok) {
+          const erro = await resposta.json();
+          alert('Erro: ' + (erro.erro || 'Erro ao extrair disciplinas.'));
+          return;
+        }
+
+        const json = await resposta.json();
+        const disciplinas = json.disciplinas || [];
+
+        listaDisciplinas.innerHTML = disciplinas.map(nome =>
+          `<span class="disciplina-tag">${nome}</span>`
+        ).join('');
+
+        conteudoDisciplinas.style.display = 'flex';
+        mostrarConteudoBtn.style.display = 'none';
+
+        conteudoDisciplinas.scrollIntoView({ behavior: 'smooth' });
+
+      } catch (err) {
+        alert('Erro ao conectar com o servidor: ' + err.message);
+      } finally {
+        mostrarLoader(false, '', loader);
+      }
+    });
+  }
+
+  if (gerarBtn) {
+    gerarBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      enviarDados(`${BASE_URL}/gerar`, inputCargo, editalInput, dificuldadeInput);
+    });
+  }
+
+  if (informarBtn) {
+    informarBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const loader = document.getElementById('loading');
+      mostrarLoader(true, '', loader);
+      try {
+        const iniciar = await fetch(`${BASE_URL}/informar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rotina: getRotinaJSON(), cargo: inputCargo.value })
+        });
+        const initJson = await iniciar.json();
+        if (initJson.erro) throw new Error(initJson.erro);
+
+        let sessionId = initJson.session_id;
+        let pergunta = initJson.next_question;
+        let partial = initJson.partial || {};
+
+        while (pergunta) {
+          const respostaUsuario = prompt(pergunta);
+          if (respostaUsuario === null) {
+            alert('Fluxo cancelado.');
+            return;
+          }
+          const r = await fetch(`${BASE_URL}/informar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId, answer: respostaUsuario })
+          });
+          const j = await r.json();
+          if (j.resultado) {
+            exibirModal(j.resultado);
+            return;
+          }
+          if (j.erro) throw new Error(j.erro);
+          sessionId = j.session_id || sessionId;
+          pergunta = j.next_question;
+          partial = j.partial || partial;
+        }
+      } catch (err) {
+        alert('Erro no fluxo interativo: ' + err.message);
+      } finally {
+        mostrarLoader(false, '', loader);
+      }
+    });
   }
 });
