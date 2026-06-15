@@ -303,27 +303,17 @@ def gerar_blocos_do_dia(
     horario_fim: str,
     disciplinas: list[dict],
     referencia_revisao: str | None = None,
+    revisao_7dias: str | None = None,
+    revisao_30dias: bool = False,
 ) -> list[dict]:
     """
     Gera a sequência de blocos de estudo para um único dia, seguindo o método:
-      - 15 min de revisão do dia anterior (se houver referência)
+      - 15 min de revisão do dia anterior (24h)
+      - Se for dia de revisão de 7 dias: bloco de resolução de questões
+      - Se for dia de revisão de 30 dias: bloco de revisão geral
       - Ciclos de 50 min de estudo + 10 min de pausa
 
     Cada bloco alterna entre sessão de "teoria" e "questões" para a mesma disciplina.
-
-    Parâmetros:
-        horario_inicio: string "HH:MM" do início da sessão.
-        horario_fim: string "HH:MM" do fim da sessão.
-        disciplinas: lista de disciplinas com pesos e tópicos.
-        referencia_revisao: string descrevendo o último conteúdo estudado ontem.
-
-    Retorna:
-        Lista de blocos no formato:
-        {
-          "inicio": "19:00", "fim": "19:50",
-          "disciplina": "Português", "topicos": ["Concordância"],
-          "tipo": "teoria"  ← ou "questoes" ou "revisao"
-        }
     """
     if not horario_inicio or not horario_fim:
         return []
@@ -331,22 +321,45 @@ def gerar_blocos_do_dia(
     cursor_tempo = horario_para_datetime(horario_inicio)
     fim_sessao = horario_para_datetime(horario_fim)
 
-    # Ajuste para virada de meia-noite
     if fim_sessao <= cursor_tempo:
         fim_sessao += timedelta(days=1)
 
     blocos = []
 
-    # --- Bloco de revisão do conteúdo do dia anterior ---
+    # --- 24h: Revisão do conteúdo do dia anterior ---
     if referencia_revisao:
         fim_revisao = cursor_tempo + timedelta(minutes=DURACAO_REVISAO_DIA_ANTERIOR_MIN)
         blocos.append({
             "inicio": datetime_para_horario(cursor_tempo),
             "fim": datetime_para_horario(fim_revisao),
-            "tipo": "revisao",
+            "tipo": "revisao_24h",
             "referencia": referencia_revisao,
         })
-        cursor_tempo = fim_revisao + timedelta(minutes=5)  # pequena transição
+        cursor_tempo = fim_revisao + timedelta(minutes=5)
+
+    # --- Revisão de 7 dias: foco em resolução de questões ---
+    if revisao_7dias:
+        fim_rev7 = min(fim_sessao, cursor_tempo + timedelta(minutes=DURACAO_BLOCO_ESTUDO_MIN))
+        if fim_rev7 - cursor_tempo >= timedelta(minutes=DURACAO_MINIMA_BLOCO_UTIL_MIN):
+            blocos.append({
+                "inicio": datetime_para_horario(cursor_tempo),
+                "fim": datetime_para_horario(fim_rev7),
+                "tipo": "revisao_7dias",
+                "referencia": revisao_7dias,
+            })
+            cursor_tempo = fim_rev7 + timedelta(minutes=DURACAO_PAUSA_MIN)
+
+    # --- Revisão de 30 dias: revisão geral ---
+    if revisao_30dias:
+        fim_rev30 = min(fim_sessao, cursor_tempo + timedelta(minutes=DURACAO_BLOCO_ESTUDO_MIN))
+        if fim_rev30 - cursor_tempo >= timedelta(minutes=DURACAO_MINIMA_BLOCO_UTIL_MIN):
+            blocos.append({
+                "inicio": datetime_para_horario(cursor_tempo),
+                "fim": datetime_para_horario(fim_rev30),
+                "tipo": "revisao_30dias",
+                "referencia": "Revisão geral de todo o conteúdo estudado",
+            })
+            cursor_tempo = fim_rev30 + timedelta(minutes=DURACAO_PAUSA_MIN)
 
     # --- Blocos principais de estudo (método 50/10) ---
     while cursor_tempo + timedelta(minutes=DURACAO_MINIMA_BLOCO_UTIL_MIN) <= fim_sessao:
@@ -356,7 +369,6 @@ def gerar_blocos_do_dia(
         topicos_da_sessao = obter_proximos_topicos(disciplina_atual, quantidade=2)
 
         tipo_sessao = disciplina_atual["proximo_tipo_sessao"]
-        # Alterna o tipo para o próximo bloco desta disciplina
         disciplina_atual["proximo_tipo_sessao"] = (
             "questoes" if tipo_sessao == "teoria" else "teoria"
         )
@@ -370,7 +382,6 @@ def gerar_blocos_do_dia(
         })
 
         cursor_tempo = fim_bloco
-        # Adiciona pausa apenas se ainda houver tempo útil depois
         if cursor_tempo + timedelta(minutes=DURACAO_PAUSA_MIN) < fim_sessao:
             cursor_tempo += timedelta(minutes=DURACAO_PAUSA_MIN)
         else:
@@ -380,33 +391,42 @@ def gerar_blocos_do_dia(
 
 
 # ---------------------------------------------------------------------------
-# Seção 6 — Montagem do plano semanal completo
+# Seção 6 — Montagem do plano de estudos contínuo
 # ---------------------------------------------------------------------------
 
-def montar_plano_semanal(conteudos_extraidos: dict, rotina_raw, cargo: str, dificuldade: str = "") -> dict:
+def montar_plano_estudos(conteudos_extraidos: dict, rotina_raw, cargo: str, dificuldade: str = "", data_prova_str: str | None = None) -> dict:
     """
-    Orquestra a geração do plano de estudos para a semana atual.
+    Orquestra a geração do plano de estudos do dia atual até a data da prova.
 
     Passos:
     1. Parseia a rotina do usuário.
     2. Monta a lista de disciplinas com pesos.
-    3. Para cada dia com horário disponível, gera os blocos de estudo.
-    4. Insere revisão do dia anterior quando aplicável.
-    5. Calcula o resumo de horas por disciplina.
+    3. Para cada dia útil, gera blocos de estudo com método 24/7/30.
+    4. Gera blocos contínuos até a data da prova.
 
-    Retorna um dicionário com o plano completo, incluindo:
-    - Cargo e semana de referência
-    - Lista de dias com seus blocos
-    - Resumo de horas totais e por disciplina
+    Retorna um dicionário com o plano completo:
+    - Cargo, período, lista de dias com blocos e conteúdos extraídos.
     """
     rotina_semanal = parse_rotina_semanal(rotina_raw)
     disciplinas = montar_lista_disciplinas(conteudos_extraidos, dificuldade)
 
-    # Calcula o intervalo da semana atual (segunda → domingo)
     hoje = datetime.now()
-    inicio_semana = hoje - timedelta(days=hoje.weekday())
-    fim_semana = inicio_semana + timedelta(days=6)
-    label_semana = f"{inicio_semana.strftime('%d/%m')} a {fim_semana.strftime('%d/%m')}"
+    hoje_subst = hoje.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Parse da data da prova
+    data_prova = None
+    if data_prova_str:
+        for fmt in ["%d/%m/%Y", "%d/%m/%y"]:
+            try:
+                data_prova = datetime.strptime(data_prova_str.strip(), fmt)
+                break
+            except ValueError:
+                continue
+    if data_prova is None:
+        data_prova = hoje_subst + timedelta(days=60)
+
+    if data_prova <= hoje_subst:
+        data_prova = hoje_subst + timedelta(days=60)
 
     # Normaliza as chaves da rotina para o padrão sem acento
     rotina_sem_acento = {}
@@ -418,26 +438,55 @@ def montar_plano_semanal(conteudos_extraidos: dict, rotina_raw, cargo: str, difi
         )
         rotina_sem_acento[chave_normalizada] = valor
 
-    dias_do_plano = []
-    referencia_conteudo_ontem: str | None = None  # Usado para o bloco de revisão
+    MapaDiaSemana = {
+        "monday": "segunda", "tuesday": "terca", "wednesday": "quarta",
+        "thursday": "quinta", "friday": "sexta", "saturday": "sabado",
+        "sunday": "domingo",
+    }
 
-    for dia in ORDEM_DIAS_SEMANA:
-        horario_dia = rotina_sem_acento.get(dia)
+    dias_do_plano = []
+    referencia_conteudo_ontem: str | None = None
+    historico_diario: list[str] = []
+
+    data_atual = hoje_subst
+    while data_atual <= data_prova:
+        dia_semana_en = data_atual.strftime("%A").lower()
+        dia_pt = MapaDiaSemana.get(dia_semana_en, dia_semana_en)
+        horario_dia = rotina_sem_acento.get(dia_pt)
+
+        dias_desde_inicio = (data_atual - hoje_subst).days
 
         if horario_dia is None:
-            # Dia de folga
-            dias_do_plano.append({"dia": dia, "folga": True, "blocos": []})
+            dias_do_plano.append({
+                "dia": dia_pt,
+                "data": data_atual.strftime("%d/%m/%Y"),
+                "folga": True,
+                "blocos": [],
+            })
             referencia_conteudo_ontem = None
+            historico_diario.append("")
+            data_atual += timedelta(days=1)
             continue
+
+        # Verifica se há revisão de 7 dias
+        revisao_7dias = None
+        if dias_desde_inicio >= 7 and dias_desde_inicio % 7 == 0:
+            idx_7d = dias_desde_inicio - 7
+            if idx_7d < len(historico_diario) and historico_diario[idx_7d]:
+                revisao_7dias = f"Questões sobre: {historico_diario[idx_7d]}"
+
+        # Verifica se há revisão de 30 dias
+        revisao_30dias = (dias_desde_inicio >= 30 and dias_desde_inicio % 30 == 0)
 
         blocos = gerar_blocos_do_dia(
             horario_inicio=horario_dia["inicio"],
             horario_fim=horario_dia["fim"],
             disciplinas=disciplinas,
             referencia_revisao=referencia_conteudo_ontem,
+            revisao_7dias=revisao_7dias,
+            revisao_30dias=revisao_30dias,
         )
 
-        # Identifica o último bloco de estudo do dia para usar como referência amanhã
         blocos_estudo = [b for b in blocos if b.get("disciplina")]
         if blocos_estudo:
             ultimo_bloco = blocos_estudo[-1]
@@ -446,46 +495,24 @@ def montar_plano_semanal(conteudos_extraidos: dict, rotina_raw, cargo: str, difi
         else:
             referencia_conteudo_ontem = None
 
+        historico_diario.append(referencia_conteudo_ontem or "")
+
         dias_do_plano.append({
-            "dia": dia,
+            "dia": dia_pt,
+            "data": data_atual.strftime("%d/%m/%Y"),
             "inicio": horario_dia["inicio"],
             "fim": horario_dia["fim"],
             "blocos": blocos,
         })
 
-    # --- Resumo de horas ---
-    total_minutos_estudo = 0
-    minutos_por_disciplina: dict[str, int] = {}
-
-    for dia in dias_do_plano:
-        for bloco in dia.get("blocos", []):
-            if bloco.get("tipo") == "revisao":
-                continue  # Não conta revisão nas horas de estudo
-            inicio_dt = horario_para_datetime(bloco["inicio"]) if bloco.get("inicio") else None
-            fim_dt = horario_para_datetime(bloco["fim"]) if bloco.get("fim") else None
-            if not inicio_dt or not fim_dt:
-                continue
-            duracao = int((fim_dt - inicio_dt).total_seconds() // 60)
-            total_minutos_estudo += duracao
-            nome_disc = bloco.get("disciplina", "")
-            minutos_por_disciplina[nome_disc] = minutos_por_disciplina.get(nome_disc, 0) + duracao
-
-    resumo_horas = {
-        "horas_totais": round(total_minutos_estudo / 60.0, 2),
-        "horas_por_disciplina": {
-            nome: round(minutos / 60.0, 2)
-            for nome, minutos in minutos_por_disciplina.items()
-        },
-    }
+        data_atual += timedelta(days=1)
 
     return {
         "cargo": cargo,
-        "semana": label_semana,
-        "semana_inicio": inicio_semana.strftime("%Y-%m-%d"),
-        "semana_fim": fim_semana.strftime("%Y-%m-%d"),
         "dias": dias_do_plano,
-        "resumo": resumo_horas,
         "conteudos": conteudos_extraidos,
+        "data_inicio": hoje_subst.strftime("%d/%m/%Y"),
+        "data_fim": data_prova.strftime("%d/%m/%Y"),
     }
 
 
@@ -603,8 +630,8 @@ def gerar_pdf_plano_estudos(metadados_concurso: dict, plano: dict) -> bytes:
     Gera o PDF do plano de estudos usando ReportLab.
 
     O PDF contém:
-    1. Tabela de conteúdos programáticos por disciplina
-    2. Resumo de horas semanais
+    1. Título com concurso e período
+    2. Conteúdos programáticos por disciplina
     3. Cronograma dia a dia com horários e tipos de sessão
 
     Retorna os bytes do PDF gerado (pronto para envio como arquivo).
@@ -617,7 +644,7 @@ def gerar_pdf_plano_estudos(metadados_concurso: dict, plano: dict) -> bytes:
         topMargin=15 * mm, bottomMargin=15 * mm,
     )
     estilos = getSampleStyleSheet()
-    elementos_pdf = []  # Lista de "flowables" do ReportLab
+    elementos_pdf = []
 
     # --- Título principal ---
     nome_concurso = metadados_concurso.get("nome_concurso") or "Concurso Público"
@@ -629,7 +656,8 @@ def gerar_pdf_plano_estudos(metadados_concurso: dict, plano: dict) -> bytes:
         titulo += f" — Prova em {data_prova}"
     elementos_pdf.append(Paragraph(titulo, estilos["Title"]))
 
-    subtitulo = f"Plano de estudo para: {plano.get('cargo', '')} — Semana: {plano.get('semana', '')}"
+    periodo = f"{plano.get('data_inicio', '')} a {plano.get('data_fim', '')}"
+    subtitulo = f"Plano de estudo para: {plano.get('cargo', '')} — {periodo}"
     elementos_pdf.append(Paragraph(subtitulo, estilos["Heading3"]))
     elementos_pdf.append(Spacer(1, 6))
 
@@ -638,7 +666,14 @@ def gerar_pdf_plano_estudos(metadados_concurso: dict, plano: dict) -> bytes:
     if conteudos:
         elementos_pdf.append(Paragraph(f"Conteúdos programáticos — {plano.get('cargo')}", estilos["Heading2"]))
 
+        cabecalho_adicionado = False
+        secao_atual = None
+
         for nome_disciplina, dados_disciplina in (conteudos.get("gerais") or {}).items():
+            if secao_atual != "gerais":
+                if not cabecalho_adicionado:
+                    cabecalho_adicionado = True
+                secao_atual = "gerais"
             elementos_pdf.append(Paragraph(nome_disciplina, estilos["Heading4"]))
             topicos = dados_disciplina.get("topicos", []) if isinstance(dados_disciplina, dict) else (dados_disciplina or [])
             texto_topicos = "; ".join(str(t).strip().strip(",") for t in topicos if str(t).strip())
@@ -654,41 +689,43 @@ def gerar_pdf_plano_estudos(metadados_concurso: dict, plano: dict) -> bytes:
 
         elementos_pdf.append(Spacer(1, 8))
 
-    # --- Resumo de horas semanais ---
-    elementos_pdf.append(Paragraph("Resumo de horas semanais", estilos["Heading3"]))
-    resumo = plano.get("resumo", {})
-    linhas_resumo = [["Total (h)", str(resumo.get("horas_totais", 0))]]
-    for nome_disc, horas in (resumo.get("horas_por_disciplina") or {}).items():
-        linhas_resumo.append([nome_disc, str(horas)])
-
-    tabela_resumo = Table(linhas_resumo, colWidths=[100 * mm, 60 * mm])
-    tabela_resumo.setStyle(TableStyle([
-        ("GRID", (0, 0), (-1, -1), 0.25, colors.grey),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.whitesmoke),
-    ]))
-    elementos_pdf.append(tabela_resumo)
-    elementos_pdf.append(Spacer(1, 8))
-
-    # --- Cronograma semanal (bloco a bloco) ---
-    elementos_pdf.append(Paragraph("Cronograma semanal de estudos", estilos["Heading3"]))
+    # --- Cronograma de estudos ---
+    elementos_pdf.append(Paragraph("Cronograma de estudos", estilos["Heading3"]))
     for dia in plano.get("dias", []):
+        data_label = dia.get("data", "")
+        data_info = f" ({data_label})" if data_label else ""
+
         if dia.get("folga"):
-            elementos_pdf.append(Paragraph(f"{dia['dia'].title()}: Folga 🏖️", estilos["Normal"]))
+            elementos_pdf.append(Paragraph(f"{dia['dia'].title()}{data_info}: Folga 🏖️", estilos["Normal"]))
             continue
 
         elementos_pdf.append(
-            Paragraph(f"{dia['dia'].title()} — {dia.get('inicio')} às {dia.get('fim')}", estilos["Heading4"])
+            Paragraph(
+                f"{dia['dia'].title()}{data_info} — {dia.get('inicio')} às {dia.get('fim')}",
+                estilos["Heading4"]
+            )
         )
 
         for bloco in dia.get("blocos", []):
-            if bloco.get("tipo") == "revisao":
+            tipo = bloco.get("tipo", "")
+            if tipo in ("revisao_24h", "revisao"):
                 descricao_bloco = (
                     f"🔁 {bloco['inicio']}–{bloco['fim']}: "
-                    f"Revisão do conteúdo anterior — {bloco.get('referencia', '')}"
+                    f"Revisão 24h — {bloco.get('referencia', '')}"
+                )
+            elif tipo == "revisao_7dias":
+                descricao_bloco = (
+                    f"📝 {bloco['inicio']}–{bloco['fim']}: "
+                    f"Revisão 7 dias — {bloco.get('referencia', '')}"
+                )
+            elif tipo == "revisao_30dias":
+                descricao_bloco = (
+                    f"🔄 {bloco['inicio']}–{bloco['fim']}: "
+                    f"Revisão 30 dias — {bloco.get('referencia', '')}"
                 )
             else:
                 topicos_str = ", ".join(bloco.get("topicos", [])[:2])
-                tipo_label = "📖 Teoria" if bloco.get("tipo") == "teoria" else "📝 Questões"
+                tipo_label = "📖 Teoria" if tipo == "teoria" else "📝 Questões"
                 descricao_bloco = (
                     f"{tipo_label}  {bloco['inicio']}–{bloco['fim']}: "
                     f"{bloco.get('disciplina')} — {topicos_str}"
@@ -729,7 +766,8 @@ Você é um verificador crítico de extrações de edital para o cargo: {cargo}.
 Sua tarefa:
 1. Verifique se o JSON abaixo contém TODAS as disciplinas e tópicos coerentes com o cargo.
 2. Se algo estiver faltando, incorreto ou de outro nível, CORRIJA.
-3. Mantenha o formato EXATO abaixo. Responda SOMENTE com o JSON corrigido.
+3. Inclua a DATA DA PROVA no campo "data_prova" (formato DD/MM/AAAA) se encontrada no edital.
+4. Mantenha o formato EXATO abaixo. Responda SOMENTE com o JSON corrigido.
 
 TRECHO DO EDITAL (contexto):
 {trecho_edital[:3500]}
@@ -740,7 +778,8 @@ JSON ATUAL:
 FORMATO ESPERADO (responda apenas com isto):
 {{
   "gerais": {{ "Nome da Disciplina": ["tópico 1", "tópico 2"] }},
-  "especificos": {{ "Conhecimentos Específicos": ["tópico 1", "tópico 2"] }}
+  "especificos": {{ "Conhecimentos Específicos": ["tópico 1", "tópico 2"] }},
+  "data_prova": "DD/MM/AAAA"
 }}
 """
     try:
@@ -938,6 +977,7 @@ INSTRUÇÕES:
    - Disciplinas GERAIS (comuns a vários cargos do mesmo nível)
    - Conhecimentos ESPECÍFICOS (exclusivos do cargo "{cargo_escolhido}")
 4. Extraia os tópicos EXATAMENTE como aparecem no edital. NÃO invente tópicos.
+5. Localize a DATA DA PROVA no edital e inclua no campo "data_prova" no formato DD/MM/AAAA.
 
 FORMATO OBRIGATÓRIO DE RESPOSTA (apenas o JSON, sem texto adicional):
 {{
@@ -946,7 +986,8 @@ FORMATO OBRIGATÓRIO DE RESPOSTA (apenas o JSON, sem texto adicional):
   }},
   "especificos": {{
     "Conhecimentos Específicos": ["tópico 1", "tópico 2", ...]
-  }}
+  }},
+  "data_prova": "DD/MM/AAAA"
 }}
 
 TRECHO DO EDITAL:
@@ -1022,10 +1063,13 @@ TRECHO DO EDITAL:
                 500,
             )
 
-        # --- Passo 6: Montagem do plano e geração do PDF ---
-        plano_semanal = montar_plano_semanal(conteudos_extraidos, rotina_usuario, cargo_escolhido, dificuldade)
+        # --- Passo 6: Extrai metadados e data da prova ---
         metadados_concurso = extrair_metadados_edital(texto_edital)
-        bytes_pdf = gerar_pdf_plano_estudos(metadados_concurso, plano_semanal)
+        data_prova = metadados_concurso.get("data_prova") or conteudos_extraidos.get("data_prova")
+
+        # --- Passo 7: Montagem do plano contínuo e geração do PDF ---
+        plano_estudos = montar_plano_estudos(conteudos_extraidos, rotina_usuario, cargo_escolhido, dificuldade, data_prova)
+        bytes_pdf = gerar_pdf_plano_estudos(metadados_concurso, plano_estudos)
 
         nome_arquivo = f"plano_{cargo_escolhido.replace(' ', '_')}.pdf"
         return send_file(

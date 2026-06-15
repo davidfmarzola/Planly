@@ -60,7 +60,7 @@ async function enviarDados(url) {
     };
   }
 
-  mostrarLoader(true);
+  mostrarLoader(true, 'Montando plano de estudos...');
 
   try {
     const resposta = await fetch(url, {
@@ -103,8 +103,11 @@ async function enviarDados(url) {
   }
 }
 
-function mostrarLoader(exibir) {
+function mostrarLoader(exibir, mensagem) {
   loader.style.display = exibir ? 'flex' : 'none';
+  if (exibir && mensagem) {
+    document.getElementById('loading-text').textContent = mensagem;
+  }
 }
 
 function exibirModal(conteudo) {
@@ -178,7 +181,7 @@ mostrarConteudoBtn.addEventListener('click', async function (e) {
     return;
   }
 
-  mostrarLoader(true);
+  mostrarLoader(true, 'Analisando edital...');
 
   try {
     const dados = new FormData();
