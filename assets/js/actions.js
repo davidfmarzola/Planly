@@ -1,5 +1,11 @@
 const BASE_URL = 'https://planly-qmpv.onrender.com';
 
+function fetchComTimeout(url, options = {}, timeoutMs = 60000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(id));
+}
+
 function getRotinaJSON() {
   const radio = document.querySelector('input[name="horas_estudo"]:checked');
   const horas = radio ? parseInt(radio.value, 10) : 2;
@@ -55,11 +61,11 @@ async function enviarDados(url, inputCargo, editalInput, dificuldadeInput) {
   mostrarLoader(true, 'Montando plano de estudos...', loader);
 
   try {
-    const resposta = await fetch(url, {
+    const resposta = await fetchComTimeout(url, {
       method: 'POST',
       body: isArquivo ? dados : JSON.stringify(dados),
       headers: isArquivo ? undefined : { 'Content-Type': 'application/json' }
-    });
+    }, 300000);
 
     if (!resposta.ok) {
       try {
@@ -148,10 +154,10 @@ document.addEventListener('DOMContentLoaded', function () {
     dados.append('edital', arquivo);
 
     try {
-      const resposta = await fetch(`${BASE_URL}/extrair_cargos`, {
+      const resposta = await fetchComTimeout(`${BASE_URL}/extrair_cargos`, {
         method: 'POST',
         body: dados
-      });
+      }, 30000);
 
       if (!resposta.ok) {
         throw new Error('Erro ao processar edital');
@@ -194,10 +200,10 @@ document.addEventListener('DOMContentLoaded', function () {
         dados.append('edital', arquivo);
         dados.append('cargo', inputCargo.value.trim());
 
-        const resposta = await fetch(`${BASE_URL}/extrair_disciplinas`, {
+        const resposta = await fetchComTimeout(`${BASE_URL}/extrair_disciplinas`, {
           method: 'POST',
           body: dados,
-        });
+        }, 120000);
 
         if (!resposta.ok) {
           const erro = await resposta.json();
@@ -238,11 +244,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const loader = document.getElementById('loading');
       mostrarLoader(true, '', loader);
       try {
-        const iniciar = await fetch(`${BASE_URL}/informar`, {
+        const iniciar = await fetchComTimeout(`${BASE_URL}/informar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ rotina: getRotinaJSON(), cargo: inputCargo.value })
-        });
+        }, 30000);
         const initJson = await iniciar.json();
         if (initJson.erro) throw new Error(initJson.erro);
 
@@ -256,11 +262,11 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Fluxo cancelado.');
             return;
           }
-          const r = await fetch(`${BASE_URL}/informar`, {
+          const r = await fetchComTimeout(`${BASE_URL}/informar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ session_id: sessionId, answer: respostaUsuario })
-          });
+          }, 30000);
           const j = await r.json();
           if (j.resultado) {
             exibirModal(j.resultado);

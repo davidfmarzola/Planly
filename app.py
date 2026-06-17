@@ -52,6 +52,7 @@ if not chave_deepseek:
 cliente_ia = OpenAI(
     api_key=chave_deepseek,
     base_url="https://api.deepseek.com/v1",
+    timeout=120.0,  # 2 minutos limite para evitar hangs
 )
 
 app = Flask(__name__)
@@ -938,8 +939,22 @@ def extrair_cargos_do_edital():
     except Exception as erro:
         return jsonify({"erro": f"Erro ao ler o PDF: {str(erro)}"}), 500
 
-    # Busca padrões do tipo "Cargo: Analista de Sistemas"
-    cargos_encontrados = re.findall(r"Cargo\s*:\s*(.+)", texto_edital)
+    # Busca padrões de cargo no edital (vários formatos comuns)
+    cargos_encontrados = []
+    # Padrão 1: "Cargo: Analista de Sistemas" ou "CARGO: ANALISTA"
+    cargos_encontrados += re.findall(r"(?:Cargo|CARGO)\s*:?\s*(.+)", texto_edital)
+    # Padrão 2: "CARGO (...) :" em cabeçalhos de tabela — linhas com CARGO em maiúsculo seguidas de texto
+    if not cargos_encontrados:
+        linhas = texto_edital.split("\n")
+        for i, linha in enumerate(linhas):
+            if re.match(r"^\s*CARGO\s", linha, re.I):
+                # Pega linhas não-vazias seguintes (conteúdo da tabela)
+                for j in range(i + 1, min(i + 20, len(linhas))):
+                    conteudo = linhas[j].strip()
+                    if not conteudo or re.match(r"^\s*[A-Z]{4,}", linhas[j]):
+                        break
+                    if conteudo and not re.search(r"(?:Total|Subtotal|Vaga)", conteudo, re.I):
+                        cargos_encontrados.append(conteudo)
     cargos_unicos = list(set(c.strip() for c in cargos_encontrados if c.strip()))
 
     return jsonify({"cargos": cargos_unicos})
