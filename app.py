@@ -52,7 +52,7 @@ if not chave_deepseek:
 cliente_ia = OpenAI(
     api_key=chave_deepseek,
     base_url="https://api.deepseek.com/v1",
-    timeout=120.0,  # 2 minutos limite para evitar hangs
+    timeout=25.0,  # Limite de 25s por chamada (Render free tier corta em 30s)
 )
 
 app = Flask(__name__)
@@ -61,24 +61,7 @@ CORS(app, resources={r"/*": {"origins": [
     "https://david.marzola.github.io",
     "http://localhost:5000",
     "http://127.0.0.1:5000",
-]}}, supports_credentials=True)
-
-@app.after_request
-def adicionar_cabecalhos_cors(resposta):
-    origem = request.headers.get("Origin", "")
-    origens_permitidas = [
-        "https://davidfmarzola.github.io",
-        "https://david.marzola.github.io",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000",
-    ]
-    if origem in origens_permitidas:
-        resposta.headers["Access-Control-Allow-Origin"] = origem
-    else:
-        resposta.headers["Access-Control-Allow-Origin"] = "*"
-    resposta.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    resposta.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    return resposta
+]}})
 
 # Armazena sessões temporárias do fluxo interativo (/informar) em memória.
 # Chave: session_id (UUID) → Valor: dicionário com estado da conversa.
@@ -1086,10 +1069,7 @@ TRECHO DO EDITAL:
                 500,
             )
 
-        # --- Passo 5: Revisão via Reflection ---
-        conteudos_extraidos = revisar_conteudos_com_ia(conteudos_extraidos, cargo_escolhido, trecho_para_ia)
-
-        # Valida se ao menos uma disciplina foi extraída
+        # --- Passo 5: Valida se ao menos uma disciplina foi extraída ---
         disciplinas_teste = montar_lista_disciplinas(conteudos_extraidos)
         if not disciplinas_teste:
             return make_response(

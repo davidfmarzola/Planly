@@ -65,7 +65,7 @@ async function enviarDados(url, inputCargo, editalInput, dificuldadeInput) {
       method: 'POST',
       body: isArquivo ? dados : JSON.stringify(dados),
       headers: isArquivo ? undefined : { 'Content-Type': 'application/json' }
-    }, 300000);
+    }, 60000);
 
     if (!resposta.ok) {
       try {
