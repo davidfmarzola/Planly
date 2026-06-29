@@ -3,119 +3,201 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Planly</title>
-  <link rel="stylesheet" href="assets/css/reset.css">
+  <title>Planly — Plano de Estudos para Concursos</title>
   <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="icon" type="image/png" href="assets/icons/icon.svg"/>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg"/>
 </head>
 <body>
-  <header class="header">
-    <div class="container"> 
-        <h1>PLAN<span class="p2">LY</span></h1>
 
-      <label class="switch" aria-label="Alterar tema escuro/claro" title="Alterar tema">
-        <input type="checkbox" id="themeToggle">
-        <span class="slider"></span>
-      </label>
-      <img src="assets/icons/logo.svg" alt="logo do planly" class="logo">
-    </div>
-  </header>
-
-  <section class="hero">
-    <div class="container">
-      <div class="text-content">
-        <h1>Sua rotina,<br>do seu jeito.</h1>
-        <p>Crie a rotina de estudos perfeita <br> para alcançar o seu melhor desempenho.</p>
-        <button class="button" id="saibaMais">Saiba mais</button>
-      </div>
-    </div>
-
-    <div class="image-outside">
-      <img src="assets/img/background-notebook.jpg" alt="Notebook ao fundo">
-    </div>
-  </section>
-
-  <main id="formulario">
-    <form class="formulario">
-      <div class="form-group">
-        <h1>Escreva aqui os detalhes da sua rotina</h1>
-        <textarea id="rotina" placeholder="Digite aqui..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <h1>Sobre o que você quer estudar?</h1>
-        <input type="text" id="interesse" list="opcoes" placeholder="Escolha um tema">
-        <datalist id="opcoes">
-          <option value="Programação">
-          <option value="Enem">
-          <option value="Matemática">
-          <option value="Inglês">
-        </datalist>
-      </div>
-
-      <div class="botoes">
-        <button type="button" class="button" id="gerar">GERAR</button>
-        <button type="button" class="button" id="analisar">ANALISAR</button>
-      </div>
-    </form>
-  </main>
-
-  <section class="exemplo hero">
-    <div class="container">
-      <div class="text-content">
-        <h1>Exemplo<br>simples.</h1>
-        <div class="exemplo-form">
-          <p>Possuo o final de semana todo livre.</p>
-          <button class="button" id="gerarExemplo">GERAR</button>
+  <header class="header" role="banner">
+    <div class="header-container">
+      <div class="branding">
+        <img src="assets/icons/logo.svg" alt="Planly" class="logo" width="40" height="40">
+        <div class="branding-text">
+          <h1>Planly</h1>
+          <span class="branding-tagline">Plano de estudos inteligente</span>
         </div>
       </div>
     </div>
-    <div class="image-outside">
-      <img src="assets/img/background-tasks.jpg" alt="Checklist">
-    </div>
-  </section>
+  </header>
 
-  <footer>
-    <div class="footer-grid">
-      <div class="apoie">
-        <h4>Apoie meu projeto</h4>
-        <ul class="footer-list">
-          <li>
-            <img src="assets/icons/github.svg" alt="GitHub">
-            <a href="https://github.com/dappter/Planly" target="_blank">github.com/dappter/Planly</a>
-          </li>
-          <li>
-            <img src="assets/icons/linkedin.svg" alt="LinkedIn">
-            <a href="https://www.linkedin.com/in/jos%C3%A9-guilherme-rodrigues-l%C3%B3ssio-417237323/" target="_blank">José Guilherme R. Lóssio</a>
-          </li>
-        </ul>
+  <main role="main">
+    <div class="main-container">
+
+      <!-- Steps indicator -->
+      <div class="steps" role="tablist" aria-label="Etapas do plano de estudos">
+        <div class="step active" data-step="1" role="tab" aria-selected="true" aria-label="Etapa 1: Enviar edital">
+          <span class="step-number">1</span>
+          <span class="step-label">Enviar edital</span>
+        </div>
+        <div class="step-connector" aria-hidden="true"></div>
+        <div class="step" data-step="2" role="tab" aria-selected="false" aria-label="Etapa 2: Personalizar plano">
+          <span class="step-number">2</span>
+          <span class="step-label">Personalizar</span>
+        </div>
+        <div class="step-connector" aria-hidden="true"></div>
+        <div class="step" data-step="3" role="tab" aria-selected="false" aria-label="Etapa 3: Gerar plano">
+          <span class="step-number">3</span>
+          <span class="step-label">Gerar plano</span>
+        </div>
       </div>
-      <div class="contatos">
-        <h4>Entre em contato</h4>
-        <ul class="footer-list">
-          <li>
-            <img src="assets/icons/gmail.svg" alt="Gmail">
-            <a href="mailto:guilhermelossio3@gmail.com">guilhermelossio3@gmail.com</a>
-          </li>
-          <li>
-            <img src="assets/icons/phone.svg" alt="Telefone">
-            <a href="tel:+558899758371">+55 (88) 9975-8371</a>
-          </li>
-          <li>
-            <img src="assets/icons/discord.svg" alt="Discord">
-            <a href="https://discord.com/users/514121475402235907" target="_blank">@ze144p</a>
-          </li>
-        </ul>
+
+      <!-- Main form card -->
+      <div class="form-card">
+        <form class="formulario" novalidate>
+
+          <!-- Step 1 content -->
+          <div class="step-content" data-step="1">
+            <div class="form-group">
+              <label for="edital" class="form-label">Selecione o edital do concurso (PDF)</label>
+              <label class="upload-area" for="edital" aria-label="Clique para selecionar o arquivo PDF do edital">
+                <div class="upload-icon" aria-hidden="true">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="18" x2="12" y2="12"/>
+                    <line x1="9" y1="15" x2="15" y2="15"/>
+                  </svg>
+                </div>
+                <p class="upload-text">
+                  <span class="upload-text-primary">Clique para fazer upload</span>
+                  <span class="upload-text-secondary">Formatos aceitos: PDF</span>
+                </p>
+                <input type="file" id="edital" accept="application/pdf" class="upload-input" aria-describedby="edital-help">
+                <span id="file-name" class="file-name" aria-live="polite"></span>
+              </label>
+              <span id="edital-help" class="form-help">Selecione o arquivo PDF do edital do concurso desejado</span>
+            </div>
+
+            <div class="form-group">
+              <label for="cargo" class="form-label">Escolha o cargo</label>
+              <input type="text" id="cargo" list="opcoes" placeholder="Ex: Auditor Fiscal, Técnico Administrativo..." class="form-input" autocomplete="off" aria-describedby="cargo-help">
+              <datalist id="opcoes"></datalist>
+              <span id="cargo-help" class="form-help">Digite o nome do cargo conforme descrito no edital</span>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-full" id="mostrarConteudo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Extrair conteúdos do edital
+            </button>
+          </div>
+
+          <!-- Step 2 content (hidden initially) -->
+          <div id="conteudo-disciplinas" style="display: none;" class="step-content" data-step="2">
+            <div class="form-group">
+              <label class="form-label">Conteúdos extraídos do edital</label>
+              <div id="lista-disciplinas" class="disciplinas-list" role="list" aria-label="Lista de disciplinas encontradas no edital"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Horas diárias de estudo</label>
+              <p class="form-help">Escolha quantas horas deseja estudar por dia</p>
+              <div class="hours-grid" role="radiogroup" aria-label="Seleção de horas diárias de estudo">
+                <label class="hour-card">
+                  <input type="radio" name="horas_estudo" value="1">
+                  <span class="hour-card-content">
+                    <span class="hour-card-value">1h</span>
+                    <span class="hour-card-label">1 hora</span>
+                  </span>
+                </label>
+                <label class="hour-card">
+                  <input type="radio" name="horas_estudo" value="2" checked>
+                  <span class="hour-card-content">
+                    <span class="hour-card-value">2h</span>
+                    <span class="hour-card-label">2 horas</span>
+                  </span>
+                </label>
+                <label class="hour-card">
+                  <input type="radio" name="horas_estudo" value="3">
+                  <span class="hour-card-content">
+                    <span class="hour-card-value">3h</span>
+                    <span class="hour-card-label">3 horas</span>
+                  </span>
+                </label>
+                <label class="hour-card">
+                  <input type="radio" name="horas_estudo" value="4">
+                  <span class="hour-card-content">
+                    <span class="hour-card-value">4h</span>
+                    <span class="hour-card-label">4 horas</span>
+                  </span>
+                </label>
+                <label class="hour-card">
+                  <input type="radio" name="horas_estudo" value="5">
+                  <span class="hour-card-content">
+                    <span class="hour-card-value">5h</span>
+                    <span class="hour-card-label">5 horas</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="dificuldade" class="form-label">Matérias com mais dificuldade ou facilidade</label>
+              <textarea id="dificuldade" class="input-dificuldade" placeholder="Ex: tenho dificuldade em Matemática e facilidade em Português. Também quero focar mais em Direito Constitucional porque tem maior peso." aria-describedby="dificuldade-help"></textarea>
+              <span id="dificuldade-help" class="form-help">Descreva suas preferências para personalizar o plano de estudos</span>
+            </div>
+
+            <div class="botoes">
+              <button type="submit" class="btn btn-primary btn-lg" id="gerar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                Gerar plano de estudos
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h4>Apoie meu projeto</h4>
+          <ul class="footer-list">
+            <li>
+              <img src="assets/icons/github.svg" alt="" width="20" height="20" aria-hidden="true">
+              <a href="https://github.com/davidfmarzola" target="_blank" rel="noopener">github.com/davidfmarzola</a>
+            </li>
+            <li>
+              <img src="assets/icons/linkedin.svg" alt="" width="20" height="20" aria-hidden="true">
+              <a href="https://www.linkedin.com/in/davidfmarzola/" target="_blank" rel="noopener">David F. Marzola</a>
+            </li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Entre em contato</h4>
+          <ul class="footer-list">
+            <li>
+              <img src="assets/icons/gmail.svg" alt="" width="20" height="20" aria-hidden="true">
+              <a href="mailto:davidmarzola22@gmail.com">davidmarzola22@gmail.com</a>
+            </li>
+            <li>
+              <img src="assets/icons/phone.svg" alt="" width="20" height="20" aria-hidden="true">
+              <a href="tel:+5531995201158">+55 (31) 99520-1158</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Planly &mdash; Plano de estudos inteligente para concursos públicos</p>
       </div>
     </div>
   </footer>
 
+  <div id="loading" role="alert" aria-live="polite" style="display: none;">
+    <div class="loader"></div>
+    <p id="loading-text" class="loading-text">Montando plano de estudos...</p>
+  </div>
 
-<div id="loading" style="display: none;">
-  <div class="loader"></div>
-  <p style="color: #1e1e1e;">Gerando plano de estudos...</p>
-</div>
-<script src="assets/js/button.js"></script>
-<script src="assets/js/actions.js"></script>
+  <script src="assets/js/button.js"></script>
+  <script src="assets/js/actions.js"></script>
 </body>
 </html>
