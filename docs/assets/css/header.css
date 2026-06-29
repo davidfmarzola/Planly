@@ -1,164 +1,91 @@
-/* ========================
-   Layout do Cabeçalho
-======================== */
-
-.header{
-    background-color: #1E1E1E;
+.header {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .header .container {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 70px;
-    align-items: center;
-    padding: 0 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.875rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
-
-.branding{
-    display: flex;
-    align-items: center;
-    gap: 40px;
-}
-
-.logo{
-    height: 65px;
-    width: 65px;
-    object-fit: contain;
-}
-
-
-/* ========================
-   Título do Cabeçalho
-======================== */
 
 .header h1 {
-    color: #fff;
-    font-weight: bold;
-    font-size: 40px;
-    display: flex;
-    flex-direction: column;
+  color: #0F172A;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
 }
 
 .p2 {
-    color: #8C52FF;
+  color: #2563EB;
 }
 
-    @media (max-width:720px) {
-        .header .container {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .header h1 {
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .logo {
-            order: -1;
-        }
-    }
-
-/* ========================
-   Botão de Alternar Tema
-======================== */
+.logo {
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
+}
 
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 142px;
-    height: 67px;
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+  flex-shrink: 0;
 }
-  
+
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    cursor: pointer;
-    background-color: #1e1e1e;
-    border: 2px solid #ffffff;
-    border-radius: 34px;
-
-    transition: background-color 0.4s;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  cursor: pointer;
+  background-color: #E2E8F0;
+  border-radius: 24px;
+  transition: background-color 0.3s ease;
 }
 
 .slider::before {
-    content: "";
-    position: absolute;
-
-    width: 55px;
-    height: 55px;
-    left: 5px;
-    bottom: 4.6px;
-
-    background-color: #ffffff;
-    border-radius: 50%;
-
-    transition: transform 0.4s;
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
 }
 
 input:checked + .slider {
-    background-color: #2196f3;
+  background-color: #2563EB;
 }
 
 input:checked + .slider::before {
-    transform: translateX(73px);
+  transform: translateX(24px);
 }
 
-    @media (max-width:720px) {
-        .switch {
-            width: 130px;
-            height: 60px;
-        }
-        .slider::before {
-            width: 48px;
-            height: 48px;
-            left: 6px;
-            bottom: 4px;
-        }
-    
-        input:checked + .slider::before {
-            transform: translateX(66px);
-        }
-    }
-    @media (max-width: 422px) {
-    .header .container {
-        gap: 15px;
-        padding: 1rem;
-    }
+@media (max-width: 640px) {
+  .header .container {
+    padding: 0.75rem 1rem;
+  }
 
-    .header h1 {
-        font-size: 24px;
-    }   
-
-    .switch {
-        width: 120px;
-        height: 48px;
-    }
-
-    .slider::before {
-        width: 35px;
-        height: 35px;
-        left: 5px;
-        bottom: 5px;
-        transition: transform 0.4s;
-    }
-
-    input:checked + .slider::before {
-        transform: translateX(73px);
-    }
-
+  .header h1 {
+    font-size: 1.125rem;
+  }
 }

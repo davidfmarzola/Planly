@@ -150,6 +150,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const arquivo = this.files[0];
     if (!arquivo) return;
 
+    const uploadArea = this.closest('.upload-area');
+    const fileNameEl = document.getElementById('file-name');
+    if (uploadArea) {
+      uploadArea.classList.add('has-file');
+      uploadArea.classList.remove('has-error');
+    }
+    if (fileNameEl) {
+      fileNameEl.textContent = arquivo.name;
+    }
+
     const dados = new FormData();
     dados.append('edital', arquivo);
 

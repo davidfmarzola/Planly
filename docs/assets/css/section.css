@@ -1,121 +1,97 @@
-/* ========================
-   Seção Hero (Saiba mais)
-======================== */
-
 .hero {
   position: relative;
-  background-color: #6c63ff;
-  padding: 60px;
+  padding: 3rem 1.5rem;
   overflow: hidden;
+  background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
 }
 
 .hero .container {
+  max-width: 900px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 2;
+  gap: 2rem;
   position: relative;
+  z-index: 2;
 }
-
-  @media (max-width:720px){
-      .hero .container{
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-
-/* ========================
-   Conteúdo de Texto
-======================== */
 
 .text-content {
   display: flex;
   flex-direction: column;
-  max-width: 600px;
-  z-index: 2;
+  max-width: 500px;
 }
 
 .text-content h1 {
-  font-size: 64px;
-  color: white;
-  line-height: 1.1;
-  margin-bottom: 20px;
+  font-size: 2.5rem;
+  color: #FFFFFF;
+  line-height: 1.15;
+  margin-bottom: 1rem;
 }
 
 .text-content p {
-  font-size: 24px;
-  color: #1E1E1E;
-  margin-top: 0;
-  margin-bottom: 30px;
+  font-size: 1.125rem;
+  color: #BFDBFE;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
 }
 
-/* ========================
-   Botão de Ação
-======================== */
-
 .button {
-  width: 258px;
-  height: 70px;
-  background-color: white;
-  color: #1e1e1e;
-  font-size: 30px;
-  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  color: #1E40AF;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: 0.5s;
+  transition: all 0.2s ease;
+  min-width: 160px;
 }
 
 .button:hover {
-  width: 265px;
-  height: 78px;
-  background-color: #1e1e1e;
-  color: white;
+  background-color: #EFF6FF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
-
-  @media (max-width:720px) {
-  .button {
-    width: 200px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin: 0 auto;
-  }
-}
-
-/* ========================
-   Imagem fora do container
-======================== */
 
 .image-outside {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
+  flex-shrink: 0;
 }
 
 .image-outside img {
-  height: 510px;
+  height: 320px;
   width: auto;
   border-radius: 10px;
-  display: block;
+  object-fit: cover;
 }
 
-  @media (max-width:720px){
-    .image-outside{
-      display: none;
-    }
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 1rem;
   }
-  @media (max-width: 422px) {
+
+  .hero .container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .text-content {
+    align-items: center;
+  }
+
   .text-content h1 {
-    font-size: 3px;
-    text-align: center;
+    font-size: 1.75rem;
   }
-  .text-content p{
-    font-size: 20px;
-    text-align: center;
+
+  .text-content p {
+    font-size: 1rem;
+  }
+
+  .image-outside {
+    display: none;
   }
 }

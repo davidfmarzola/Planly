@@ -1,413 +1,488 @@
-/* ========================
-   Reset / Base
-======================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* =========================================
+   Main container
+   ========================================= */
 
-body {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background-color: #f5f5f5;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ========================
-   Header
-======================== */
-.header {
-  background-color: #1e1e1e;
-  padding: 16px 24px;
-}
-
-.header .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.branding {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.branding .logo {
-  width: 40px;
-  height: 40px;
-}
-
-.branding h1 {
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.branding .p2 {
-  color: #8c52ff;
-}
-
-/* Switch tema */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 52px;
-  height: 26px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.3s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: 0.3s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #8c52ff;
-}
-
-input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-/* ========================
-   Main / Formulário (Responsivo)
-======================== */
 main {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 40px 20px;
-  background-color: white;
+  padding: 2rem 1.5rem 3rem;
   flex: 1;
+}
+
+.main-container {
+  width: 100%;
+  max-width: 680px;
+}
+
+/* =========================================
+   Steps indicator
+   ========================================= */
+
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+  padding: 0 0.5rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  position: relative;
+  flex: 1;
+  max-width: 120px;
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: #E2E8F0;
+  color: #94A3B8;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.step.active .step-number {
+  background-color: #2563EB;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.step.done .step-number {
+  background-color: #16A34A;
+  color: #FFFFFF;
+}
+
+.step-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94A3B8;
+  text-align: center;
+  transition: color 0.3s ease;
+  line-height: 1.2;
+}
+
+.step.active .step-label {
+  color: #2563EB;
+  font-weight: 600;
+}
+
+.step-connector {
+  flex: 1;
+  max-width: 60px;
+  height: 2px;
+  background-color: #E2E8F0;
+  margin: 0 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* =========================================
+   Form card
+   ========================================= */
+
+.form-card {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 2rem 2rem 1.75rem;
 }
 
 form.formulario {
-  background-color: #1e1e1e;
-  border-radius: 12px;
-  padding: 32px 28px;
-  width: 100%;
-  max-width: 680px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  gap: 0;
 }
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* =========================================
+   Form groups
+   ========================================= */
 
 .form-group {
   width: 100%;
-  text-align: left;
 }
 
-.form-group h1 {
-  font-size: 18px;
+.form-label {
+  display: block;
+  font-size: 0.9375rem;
   font-weight: 600;
-  color: white;
-  margin-bottom: 14px;
+  color: #0F172A;
+  margin-bottom: 0.5rem;
 }
 
-/* Radio buttons */
-.form-group label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-  color: #e0e0e0;
-  font-size: 15px;
-  cursor: pointer;
+.form-help {
+  display: block;
+  font-size: 0.8125rem;
+  color: #64748B;
+  margin-top: 0.375rem;
 }
 
-.form-group input[type="radio"] {
-  width: 16px;
-  height: 16px;
-  accent-color: #8c52ff;
-  margin: 0;
-  cursor: pointer;
-}
-
-/* Input file */
-.form-group input[type="file"] {
+.form-input {
   width: 100%;
-  padding: 10px;
-  border: 2px solid #8c52ff;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  color: #0F172A;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
   border-radius: 8px;
-  background-color: white;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.form-group input[type="file"]::file-selector-button {
-  background-color: #8c52ff;
-  color: white;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-right: 12px;
-  transition: 0.3s;
-}
-
-.form-group input[type="file"]::file-selector-button:hover {
-  background-color: #6b3fcc;
-}
-
-/* Input texto cargo */
-.form-group input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #8c52ff;
-  border-radius: 8px;
-  font-size: 15px;
-  background-color: white;
   outline: none;
-  transition: 0.2s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-group input[type="text"]:focus {
-  border-color: #6b3fcc;
-  box-shadow: 0 0 0 3px rgba(140,82,255,0.2);
+.form-input:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Botões */
-.botoes {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin-top: 8px;
-  flex-wrap: wrap;
+.form-input::placeholder {
+  color: #94A3B8;
 }
 
-.formulario .button {
-  background-color: #8c52ff;
-  color: white;
-  font-size: 18px;
-  font-weight: 600;
-  padding: 10px 32px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-  min-width: 140px;
-}
+/* =========================================
+   Upload area
+   ========================================= */
 
-.formulario .button:hover {
-  background-color: white;
-  color: #1e1e1e;
-  border: 2px solid #8c52ff;
-  padding: 8px 30px;
-}
-
-/* Botão Mostrar Conteúdo */
-#mostrarConteudo {
-  background-color: transparent;
-  color: #8c52ff;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 10px 24px;
-  border: 2px solid #8c52ff;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-  width: 100%;
-}
-#mostrarConteudo:hover {
-  background-color: #8c52ff;
-  color: white;
-}
-
-/* Container de disciplinas extraídas */
-#conteudo-disciplinas {
-  width: 100%;
+.upload-area {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  border: 2px dashed #E2E8F0;
+  border-radius: 10px;
+  background-color: #F8FAFC;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 140px;
 }
 
-/* Lista de disciplinas */
-#lista-disciplinas {
+.upload-area:hover {
+  border-color: #2563EB;
+  background-color: #EFF6FF;
+}
+
+.upload-area.has-file {
+  border-style: solid;
+  border-color: #16A34A;
+  background-color: #F0FDF4;
+}
+
+.upload-area.has-error {
+  border-color: #DC2626;
+  background-color: #FEF2F2;
+}
+
+.upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.upload-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.upload-area:hover .upload-icon {
+  opacity: 1;
+}
+
+.upload-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.upload-text-primary {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.upload-text-secondary {
+  font-size: 0.8125rem;
+  color: #64748B;
+}
+
+.file-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #16A34A;
+  text-align: center;
+  word-break: break-all;
+  max-width: 100%;
+}
+
+/* =========================================
+   Buttons
+   ========================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: #2563EB;
+  color: #FFFFFF;
+  border-color: #2563EB;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1D4ED8;
+  border-color: #1D4ED8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:active:not(:disabled) {
+  background-color: #1E40AF;
+  border-color: #1E40AF;
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-lg {
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+}
+
+/* Show content button */
+#mostrarConteudo {
+  margin-top: 0.5rem;
+}
+
+#mostrarConteudo svg {
+  flex-shrink: 0;
+}
+
+/* =========================================
+   Discipline tags
+   ========================================= */
+
+.disciplinas-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-}
-.disciplina-tag {
-  background-color: #8c52ff;
-  color: white;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
+  gap: 0.5rem;
 }
 
-/* Textarea dificuldade */
+.disciplina-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid #BFDBFE;
+  line-height: 1.4;
+}
+
+/* =========================================
+   Hours grid (card-style radio)
+   ========================================= */
+
+.hours-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.hour-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.hour-card input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hour-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.875rem 0.5rem;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.hour-card:hover .hour-card-content {
+  border-color: #93C5FD;
+  background-color: #F8FAFC;
+}
+
+.hour-card input:checked + .hour-card-content {
+  border-color: #2563EB;
+  background-color: #EFF6FF;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.hour-card input:focus-visible + .hour-card-content {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+.hour-card-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1;
+}
+
+.hour-card-label {
+  font-size: 0.75rem;
+  color: #64748B;
+  line-height: 1;
+}
+
+.hour-card input:checked + .hour-card-content .hour-card-value {
+  color: #2563EB;
+}
+
+/* =========================================
+   Textarea
+   ========================================= */
+
 .input-dificuldade {
   width: 100%;
   min-height: 100px;
-  padding: 12px;
-  border: 2px solid #8c52ff;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  color: #0F172A;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
   border-radius: 8px;
-  font-size: 15px;
-  font-family: inherit;
-  background-color: white;
   outline: none;
   resize: vertical;
-  transition: 0.2s;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
 .input-dificuldade:focus {
-  border-color: #6b3fcc;
-  box-shadow: 0 0 0 3px rgba(140,82,255,0.2);
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* ========================
-   Footer (Responsivo)
-======================== */
-footer {
-  background-color: #1e1e1e;
-  padding: 32px 24px;
-  border-top: 1px solid #333;
+.input-dificuldade::placeholder {
+  color: #94A3B8;
 }
 
-.footer-grid {
-  max-width: 1200px;
-  margin: 0 auto;
+/* =========================================
+   Buttons container
+   ========================================= */
+
+.botoes {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1rem;
   flex-wrap: wrap;
-  gap: 40px;
+  margin-top: 0.5rem;
 }
 
-.apoie, .contatos {
-  flex: 1;
-  min-width: 220px;
-}
+/* =========================================
+   Responsive
+   ========================================= */
 
-.footer-grid h4 {
-  color: white;
-  font-size: 18px;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-
-.footer-list {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-list li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.footer-list img {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) invert(1);
-}
-
-.footer-list a {
-  color: #ccc;
-  text-decoration: none;
-  font-size: 14px;
-  transition: 0.2s;
-}
-
-.footer-list a:hover {
-  color: #8c52ff;
-  text-decoration: underline;
-}
-
-/* ========================
-   Responsividade
-======================== */
-@media (max-width: 768px) {
-  .header .container {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  form.formulario {
-    padding: 24px 20px;
-    gap: 20px;
-  }
-
-  .form-group h1 {
-    font-size: 16px;
-  }
-
-  .botoes {
-    gap: 16px;
-  }
-
-  .formulario .button {
-    font-size: 16px;
-    padding: 8px 24px;
-    min-width: 120px;
-  }
-
-  .footer-grid {
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .footer-list li {
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   main {
-    padding: 24px 16px;
+    padding: 1.25rem 1rem 2rem;
   }
 
-  form.formulario {
-    padding: 20px 16px;
+  .form-card {
+    padding: 1.5rem 1.25rem;
   }
 
-  .form-group input[type="text"],
-  .form-group input[type="file"] {
-    font-size: 14px;
-    padding: 10px;
+  .steps {
+    gap: 0;
   }
 
-  .formulario .button {
+  .step-label {
+    font-size: 0.6875rem;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8125rem;
+  }
+
+  .hours-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .upload-area {
+    padding: 1.5rem 1rem;
+    min-height: 120px;
+  }
+
+  .btn-lg {
     width: 100%;
-    text-align: center;
   }
+}
 
-  .disciplina-tag {
-    font-size: 13px;
-    padding: 5px 12px;
+@media (max-width: 400px) {
+  .hours-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
